@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """This script runs the RankLib JAR with Coordinate Ascent, optimized for Mean Average Precision."""
+import argparse
 
 __author__ = "Shubham Chatterjee"
 __version__ = "7/11/19"
@@ -24,3 +25,16 @@ def run(rlib_path, feature_file, model_file):
     else:
         print("RankLib process did not exit gracefully, exiting the program")
         sys.exit(-1)
+
+
+def main():
+    parser = argparse.ArgumentParser("Run RankLib with Coordinate Ascent, optimized for Mean Average Precision.")
+    parser.add_argument("--jar", help="Path to the RankLib JAR file.", required=True)
+    parser.add_argument("--feature", help="Path to the RankLib compatible feature file (training data).", required=True)
+    parser.add_argument("--model", help="Path to the model file.", required=True)
+    args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
+    run(args.jar, args.feature, args.model)
+
+
+if __name__ == '__main__':
+    main()
