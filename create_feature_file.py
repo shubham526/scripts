@@ -14,6 +14,7 @@ from typing import List, Dict
 
 
 def read_run_files(run_dir: str):
+
     runfiles: Dict[str, Dict[str, Dict[str, float]]] = {}
     list_of_runfiles: List[str] = sorted(os.listdir(run_dir))
     for fname in list_of_runfiles:
