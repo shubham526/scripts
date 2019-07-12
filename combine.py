@@ -103,7 +103,7 @@ def write_file(run_strings: List[str], combined_file: str):
 
 
 def main():
-    parser = argparse.ArgumentParser("Create a new trec_eval compatible TREC-CAR run file using the RankLib model.")
+    parser = argparse.ArgumentParser("Create a new run file using the RankLib model.")
     parser.add_argument("--feature", help="Path to the RankLib feature file", required=True)
     parser.add_argument("--model", help="Path to the RankLib model file", required=True)
     parser.add_argument("--combined", help="Path to the combined run file", required=True)

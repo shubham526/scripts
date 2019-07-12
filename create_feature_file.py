@@ -10,14 +10,15 @@ import os
 import pandas as pd
 import numpy as np
 from scipy.stats import zscore
+from typing import List, Dict
 
 
 def read_run_files(run_dir: str):
-    runfiles: OrderedDict[str, OrderedDict[str, OrderedDict[str, float]]] = {}
+    runfiles: Dict[str, Dict[str, Dict[str, float]]] = {}
     list_of_runfiles: List[str] = sorted(os.listdir(run_dir))
     for fname in list_of_runfiles:
         print(fname)
-        rankings: OrderedDict[str, OrderedDict[str, float]] = {}
+        rankings: Dict[str, Dict[str, float]] = {}
         with open(run_dir + "/" + fname) as f:
             for line in f:
                 line_elems = line.split()
@@ -35,7 +36,7 @@ def read_run_files(run_dir: str):
 
 
 def read_ground_truth_file(qrels_dir: str, qrels_file: str):
-    qrels_dict: OrderedDict[str, List[str]] = {}
+    qrels_dict: Dict[str, List[str]] = {}
     with open(qrels_dir + "/" + qrels_file, 'r') as f:
         for line in f:
             query = line.split()[0]
@@ -50,7 +51,7 @@ def read_ground_truth_file(qrels_dir: str, qrels_file: str):
 
 
 def create_pool(run_dir: str):
-    pool: OrderedDict[str, List[str]] = {}
+    pool: Dict[str, List[str]] = {}
     list_of_runfiles: List[str] = sorted(os.listdir(run_dir))
     for fname in list_of_runfiles:
         with open(run_dir + "/" + fname) as f:
@@ -68,7 +69,7 @@ def create_pool(run_dir: str):
 
 
 def create_feature_dict(runfiles, pool):
-    features: OrderedDict[str, OrderedDict[str, OrderedDict[int, float]]] = {}
+    features: Dict[str, Dict[str, Dict[int, float]]] = {}
     for query in pool.keys():
         para_list = pool[query]
         for para in para_list:
@@ -78,7 +79,7 @@ def create_feature_dict(runfiles, pool):
 
 
 def get_feature_value(query, para, features, runfiles):
-    fet_val_dict: OrderedDict[int, float] = {}
+    fet_val_dict: Dict[int, float] = {}
     fet = 1
     for file in runfiles:
         rankings = runfiles[file]
@@ -88,6 +89,8 @@ def get_feature_value(query, para, features, runfiles):
                 fet_val_dict[fet] = para_score_dict[para]
             else:
                 fet_val_dict[fet] = 0.0
+        else:
+            fet_val_dict[fet] = 0.0
         fet = fet + 1
     if query in features.keys():
         features[query][para] = fet_val_dict
@@ -172,7 +175,7 @@ def create_feature_file(rundir: str, qrelsdir: str, qrelfile: str, save: str, na
     out_fet_file = save + "/" + name
 
     feature_dict = create_feature_dict(runfiles, pool)
-    if zscore == True:
+    if zscore:
         print("Using zscore normalization")
         normalized_feature_dict = convert(normalize_dataframe(dict_to_dataframe(feature_dict)).to_dict("index"))
         fet_line_list = make_feature_file(normalized_feature_dict, qrels)
@@ -192,8 +195,8 @@ def main():
     parser.add_argument("--qrelfile", help="Name of the ground truth file file", required=True)
     parser.add_argument("--save", help="Path to the directory where the feature file will be saved", required=True)
     parser.add_argument("--name", help="Name of the feature file", required=True)
-    parser.add_argument("--zscore", help="Whether to zscore normalize the features or not. Must be True or False.",
-                        required=True)
+    parser.add_argument("--zscore", help="Whether to zscore normalize the features or not. "
+                                         "Defaults to no normalization.", action="store_true")
     args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
     create_feature_file(args.rundir, args.qrelsdir, args.qrelfile, args.save, args.name, args.zscore)
 
