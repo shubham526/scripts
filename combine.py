@@ -27,12 +27,14 @@ def get_weights(model_file: str) -> Dict[str, float]:
 def get_scores(feature_file: str, weights: Dict[str, float]) -> Dict[str, Dict[str, float]]:
     score_map: OrderedDict[str, OrderedDict[str, float]] = OrderedDict()
     _map: OrderedDict[str, float]
+
     with open(feature_file, 'r') as f:
         for line in f:
             sum_score: float = 0.0
             line_parts = line.split(" ")
             query_id: str = line_parts[len(line_parts) - 1].split("_")[0][1:]
             para_id: str = line_parts[len(line_parts) - 1].split("_")[1]
+
 
             """
             # For every (feature, value pair do
