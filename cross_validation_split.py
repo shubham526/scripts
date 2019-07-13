@@ -9,10 +9,9 @@ import sys
 import os
 
 
-def cross_validation_split(run_file_path, dest, folds):
+def cross_validation_split(run_file_path, dest, folds, query_list):
     run_file_name = run_file_path[run_file_path.rfind("/")+1:]
     print("File: " + run_file_name)
-    query_list = get_query_list(run_file_path)
 
     for i in range(0, int(folds)):
         fold_query_list = split(query_list, folds)[i]
@@ -45,18 +44,6 @@ def create_fold(fold_query_list, fold_file_name, run_file_path, fold_dir):
 
 def split(query_list, n):
     return [query_list[i::n] for i in range(n)]
-
-
-def get_query_list(run_file_path):
-    query_list = []
-    with open(run_file_path, 'r') as f:
-        for line in f:
-            line_parts = line.split(" ")
-            query = line_parts[0]
-            query_id = query.split("+")[0]
-            if query_id not in query_list:
-                query_list.append(query_id)
-    return query_list
 
 
 def write_file(file_path, run_strings):
