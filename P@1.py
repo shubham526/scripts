@@ -8,7 +8,7 @@ import sys
 import argparse
 
 
-def p_at_1(run_file: str, qrel_file: str) -> float:
+def p_at_1(run_file: str, qrel_file: str):
     run_file_dict = get_rankings(run_file)
     qrel_file_dict = get_rankings(qrel_file)
     prec_dict: Dict[str, int] = {}
@@ -30,7 +30,7 @@ def p_at_1(run_file: str, qrel_file: str) -> float:
         s += i
 
     avg_p_at_1 = s / len(prec_dict)
-    return avg_p_at_1
+    return avg_p_at_1, prec_dict
 
 
 def get_rankings(file_path: str) -> Dict[str, List[str]]:
@@ -50,11 +50,19 @@ def get_rankings(file_path: str) -> Dict[str, List[str]]:
 
 def main():
     parser = argparse.ArgumentParser("Calculate Precision at 1 for a TREC-CAR run file")
-    parser.add_argument("-f", "--filepath", help="Path to the run file", required=True)
-    parser.add_argument("-q", "--qrelpath", help="Path to the ground truth (qrel) file", required=True)
+    parser.add_argument("--filepath", help="Path to the run file.", required=True)
+    parser.add_argument("--qrelpath", help="Path to the ground truth (qrel) file.", required=True)
+    parser.add_argument("--q", help="Whether per query or not. Default is False.",  action="store_true")
     args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
-    p = p_at_1(args.filepath, args.qrelpath)
-    print("P@1 = " + str(p))
+    p, prec_dict = p_at_1(args.filepath, args.qrelpath)
+
+    if args.q:
+        for queryID in prec_dict:
+            p_at_one = prec_dict[queryID]
+            print_string = "P@1" + "\t\t\t\t" + queryID + "\t" + str(p_at_one)
+            print(print_string)
+
+    print("P@1" + "\t\t\t\t" + "all" + "\t" + str(p))
 
 
 if __name__ == '__main__':
