@@ -15,7 +15,8 @@ def standard_error(file_path: str, qrel_file_path: str) -> float:
     n: int = number_of_queries(qrel_file_path)
     with open(file_path, 'r') as file:
         for line in file:
-            nums.append(float(line.split("\t")[2]))
+            m = line.split()
+            nums.append(float(m[2]))
 
     return statistics.stdev(nums[0:len(nums)]) / math.sqrt(n)
 
