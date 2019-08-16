@@ -16,20 +16,18 @@ def p_at_1(run_file: str, qrel_file: str):
 
     for queryID in run_file_dict:
         ret_para_list = run_file_dict[queryID]
-        rel_para_list = qrel_file_dict[queryID]
 
-        if len(rel_para_list) != 0:
+        if queryID in qrel_file_dict:
+            rel_para_list = qrel_file_dict[queryID]
             if ret_para_list[0] in rel_para_list:
                 prec_dict[queryID] = 1
             else:
                 prec_dict[queryID] = 0
-        else:
-            print("Did not find ground truth for query: " + queryID)
 
     for i in prec_dict.values():
         s += i
 
-    avg_p_at_1 = s / len(prec_dict)
+    avg_p_at_1 = s / len(qrel_file_dict)
     return avg_p_at_1, prec_dict
 
 
@@ -59,10 +57,10 @@ def main():
     if args.q:
         for queryID in prec_dict:
             p_at_one = prec_dict[queryID]
-            print_string = "P@1" + "\t\t\t" + queryID + "\t" + str(p_at_one)
+            print_string = "P@1" + "\t\t\t" + queryID + "\t" + "{:.4f}".format(p_at_one)
             print(print_string)
 
-    print("P@1" + "\t\t\t" + "all" + "\t" + str(p))
+    print("P@1" + "\t\t\t" + "all" + "\t" + "{:.4f}".format(p))
 
 
 if __name__ == '__main__':
