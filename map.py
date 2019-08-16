@@ -43,9 +43,14 @@ def average_prec(ret_para_list: List[str], rel_para_list: List[str]) -> float:
     return round(avg_prec, 4)
 
 
-def mean_avg_prec(run_file: str, qrel_file: str):
+def mean_average_precision(run_file: str, qrel_file:str):
     run_file_dict = get_rankings(run_file)
     qrel_file_dict = get_rankings(qrel_file)
+    p, prec_dict = mean_avg_prec(run_file_dict, qrel_file_dict)
+    return p, prec_dict
+
+
+def mean_avg_prec(run_file_dict: Dict[str, List[str]], qrel_file_dict: Dict[str, List[str]]):
     prec_dict: Dict[str, float] = {}
     s: float = 0.0
     for queryID in run_file_dict:
@@ -58,8 +63,8 @@ def mean_avg_prec(run_file: str, qrel_file: str):
     for i in prec_dict.values():
         s += i
 
-    mean_average_precision = s / len(prec_dict)
-    return mean_average_precision, prec_dict
+    _map = s / len(prec_dict)
+    return _map, prec_dict
 
 
 def num_rel_ret(ret_para_list, rel_para_list):
@@ -72,12 +77,12 @@ def main():
     parser.add_argument("--qrelpath", help="Path to the ground truth (qrel) file.", required=True)
     parser.add_argument("--q", help="Whether per query or not. Default is False.",  action="store_true")
     args = parser.parse_args(args=None if sys.argv[1:] else ['--help'])
-    p, prec_dict = mean_avg_prec(args.filepath, args.qrelpath)
+    p, prec_dict = mean_average_precision(args.filepath, args.qrelpath)
 
     if args.q:
         for queryID in prec_dict:
-            mean_avg_precision = prec_dict[queryID]
-            print_string = "map" + "\t\t\t" + queryID + "\t" + "{:.4f}".format(mean_avg_precision)
+            _map = prec_dict[queryID]
+            print_string = "map" + "\t\t\t" + queryID + "\t" + "{:.4f}".format(_map)
             print(print_string)
 
     print("map" + "\t\t\t" + "all" + "\t" + "{:.4f}".format(p))
